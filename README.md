@@ -1,1 +1,1 @@
-# cribl-take-home
+To run: `npm run start`
