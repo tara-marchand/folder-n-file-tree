@@ -1,35 +1,14 @@
-// ITreeNode
-class NodeData {
-  constructor(type, name, modified, size, children) {
-    this.type = type; // 'file' | 'folder'
-    this.name = name; // string;
-    this.modified = modified; // Date
-    this.size = size; // number
-    this.children = children; // ITreeNode[]
-  }
-
-  getType = () => this.type;
-  getName = () => this.name;
-  getModified = () => this.modified;
-  getSize = () => this.size;
-  getChildren = () => this.children;
-
-  setType = (type) => (this.type = type);
-  setName = (name) => (this.name = name);
-  setModified = (modified) => (this.modified = modified);
-  setSize = (size) => (this.size = size);
-  setChildren = (children) => (this.children = children);
-}
-
 const main = document.querySelector('main');
 const nav = main.querySelector('nav');
 const pane = main.querySelector('section');
-const nodeTreeData = getNodeTreeData();
-const nodeTree = getNodeTree(nodeTreeData);
 
-nav.addEventListener('click', handleNavClick);
-pane.addEventListener('click', handlePaneClick);
-nav.appendChild(nodeTree);
+fetchNodeTreeData().then((nodeTreeData) => {
+  const nodeTree = getNodeTree(nodeTreeData);
+
+  nav.addEventListener('click', handleNavClick);
+  pane.addEventListener('click', handlePaneClick);
+  nav.appendChild(nodeTree);
+});
 
 function handleNavClick(e) {
   e.preventDefault();
@@ -63,7 +42,7 @@ function handlePaneClick(e) {
 
   setSelectedNode(node);
 
-  if (getIsFolder(node)) {
+  if (childNodes && getIsFolder(node)) {
     // Update pane nodes
     currentPaneChildNodes.replaceWith(childNodes);
   }
@@ -107,34 +86,18 @@ function getNode(nodeData) {
   return node;
 }
 
-function getNodeTreeData() {
-  const file111 = new NodeData('file', 'file111', new Date());
-  const file112 = new NodeData('file', 'file112', new Date());
-  const folder11 = new NodeData('folder', 'folder11', new Date(), 0, [
-    file111,
-    file112,
-  ]);
-  const file11 = new NodeData('file', 'file11', new Date());
-  const folder1 = new NodeData('folder', 'folder1', new Date(), 3, [
-    folder11,
-    file11,
-  ]);
-
-  const file21 = new NodeData('file', 'file21', new Date());
-  const file22 = new NodeData('file', 'file22', new Date());
-  const folder2 = new NodeData('folder', 'folder2', new Date(), 2, [
-    file21,
-    file22,
-  ]);
-
-  return [folder1, folder2];
+async function fetchNodeTreeData() {
+  const response = await fetch('/data');
+  return response.text();
 }
 
 function getNodeTree(nodeTreeData) {
   const nodeTree = document.createElement('ul');
-  nodeTreeData.map((node) => {
+
+  JSON.parse(nodeTreeData).map((node) => {
     nodeTree.appendChild(getNode(node));
   });
+
   return nodeTree;
 }
 
@@ -144,7 +107,11 @@ function getClonedChildNodesFromFolderTree(folderName) {
     `li[data-name="${folderName}"]`
   );
   const childNodes = folderTreeNode.querySelector('ul');
-  return childNodes.cloneNode(true);
+  
+  if (childNodes) {
+    return childNodes.cloneNode(true);
+  }
+  return null;
 }
 
 function getIsFolder(node) {
