@@ -1,0 +1,59 @@
+@import url('https://css.gg/file-document.css');
+@import url('https://css.gg/folder-add.css');
+@import url('https://css.gg/folder-remove.css');
+
+body {
+  font-family: sans-serif;
+  --color-border: #ddd;
+  --width-border: 10px;
+}
+
+main {
+  border: 10px solid var(--color-border);
+  display: grid;
+  grid-template-columns: [start] 30% [column2] 70% [end];
+}
+
+nav {
+  border-right: var(--width-border) solid var(--color-border);
+  grid-column-start: start;
+  grid-column-end: column2;
+}
+
+section {
+  grid-column-start: column2;
+  grid-column-end: end;
+}
+
+h2 {
+  margin-left: 20px;
+}
+
+ul {
+  list-style: none;
+}
+
+li > div {
+  align-items: center;
+  display: flex;
+}
+
+i {
+  margin: 10px;
+}
+
+li.folder > span {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.selected {
+  background-color: var(--color-border);
+}
+
+.selected > ul {
+  background-color: #fff;
+}
