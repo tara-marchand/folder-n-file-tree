@@ -111,13 +111,21 @@ function toggleIsHidden(node) {
   const icon = node.querySelector('i');
   const childNodes = node.querySelector('ul');
 
+  if (!childNodes) {
+    return;
+  }
+
   if (childNodes.classList.contains('hidden')) {
-    icon.classList.remove('gg-folder-add');
-    icon.classList.add('gg-folder-remove');
+    if (icon) {
+      icon.classList.remove('gg-folder-add');
+      icon.classList.add('gg-folder-remove');
+    }
     childNodes.classList.remove('hidden');
   } else {
-    icon.classList.remove('gg-folder-remove');
-    icon.classList.add('gg-folder-add');
+    if (icon) {
+      icon.classList.remove('gg-folder-remove');
+      icon.classList.add('gg-folder-add');
+    }
     childNodes.classList.add('hidden');
   }
 }
@@ -142,4 +150,5 @@ export {
   getNodeTree,
   handleNavClick,
   handlePaneClick,
+  toggleIsHidden
 };
