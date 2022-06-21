@@ -31,6 +31,10 @@ section {
   grid-column-end: end;
 }
 
+section > .columns {
+  margin: 20px 0 0 10px;
+}
+
 nav > ul, section > ul {
   padding-left: 10px;
 }
@@ -45,6 +49,7 @@ ul {
 }
 
 .columns {
+  color: #555;
   display: grid;
   grid-template-columns: [start-node] 50% [column2-node] 25% [column3-node] 15% [end-node];
   width: 100%;
