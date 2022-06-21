@@ -25,7 +25,7 @@ function handleNavClick(e) {
 
 function handlePaneClick(e) {
   e.preventDefault();
-  const currentPaneChildNodes = pane.querySelector('ul');
+  const currentPaneChildNodes = pane.querySelectorAll('.children').item(0);
   const node = e.target.closest('li');
   const childNodes = getClonedChildNodesFromFolderTree(node.dataset.name);
 
@@ -39,10 +39,16 @@ function handlePaneClick(e) {
 
 function getNode(nodeData) {
   const node = document.createElement('li');
+
+  const colContainer = document.createElement('div');
+  colContainer.classList.add('columns');
+
+  // Icon and name column
+  const nameCol = document.createElement('div')
+  nameCol.classList.add('column-name');
   const icon = document.createElement('i');
   const name = document.createElement('span');
   const nameText = nodeData.name;
-  let iconAndName;
 
   name.innerText = nameText;
   node.dataset.name = nameText;
@@ -54,13 +60,34 @@ function getNode(nodeData) {
     icon.classList.add('gg-file-document');
   }
 
-  iconAndName = document.createElement('div');
-  iconAndName.append(icon);
-  iconAndName.appendChild(name);
-  node.appendChild(iconAndName);
+  nameCol.append(icon);
+  nameCol.appendChild(name);
+
+  colContainer.appendChild(nameCol);
+
+  // Date column
+  const dateCol = document.createElement('div');
+  dateCol.classList.add('column-date');
+  
+  const date = new Date(nodeData.modified);
+  const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+  dateCol.innerHTML = `${month}/${day}/${year}`;
+
+  colContainer.appendChild(dateCol);
+
+  // File size column
+  const sizeCol = document.createElement('div');
+  sizeCol.classList.add('column-size');
+  if (nodeData.size !== null) {
+    sizeCol.innerHTML = nodeData.size;
+  }
+
+  colContainer.appendChild(sizeCol);
+  node.append(colContainer);
 
   if (nodeData.children && nodeData.children.length > 0) {
     const nodeChildren = document.createElement('ul');
+    nodeChildren.classList.add('children');
     nodeChildren.classList.add('hidden');
 
     nodeData.children.map((childNode) => {

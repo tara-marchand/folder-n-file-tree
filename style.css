@@ -22,6 +22,10 @@ nav {
   grid-column-end: column2;
 }
 
+nav .column-date, nav .column-size {
+  display: none;
+}
+
 section {
   grid-column-start: column2;
   grid-column-end: end;
@@ -38,6 +42,33 @@ h2 {
 
 ul {
   list-style: none;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: [start-node] 50% [column2-node] 25% [column3-node] 15% [end-node];
+  width: 100%;
+}
+
+.column-name {
+  align-items: center;
+  display: flex;
+  grid-column-start: start-node;
+  grid-column-end: column2-node;
+}
+
+.column-date {
+  grid-column-start: column2-node;
+  grid-column-end: column3-node;
+}
+
+.column-size {
+  grid-column-start: column3-node;
+  grid-column-end: end-node;
+}
+
+.folder .column-size {
+  display: none;
 }
 
 li > div {
