@@ -1,28 +1,6 @@
-import Fastify from 'fastify';
-import fastifyStatic from '@fastify/static';
-
-// ITreeNode
-class NodeData {
-  constructor(type, name, modified, size, children) {
-    this.type = type; // 'file' | 'folder'
-    this.name = name; // string;
-    this.modified = modified; // Date
-    this.size = size; // number
-    this.children = children; // ITreeNode[]
-  }
-
-  getType = () => this.type;
-  getName = () => this.name;
-  getModified = () => this.modified;
-  getSize = () => this.size;
-  getChildren = () => this.children;
-
-  setType = (type) => (this.type = type);
-  setName = (name) => (this.name = name);
-  setModified = (modified) => (this.modified = modified);
-  setSize = (size) => (this.size = size);
-  setChildren = (children) => (this.children = children);
-}
+const Fastify = require('fastify');
+const fastifyStatic = require('@fastify/static');
+const { NodeData } = require('./NodeData');
 
 const fastify = Fastify({
   logger: true,
@@ -34,10 +12,9 @@ fastify.get('/', function (req, reply) {
   return reply.sendFile('index.html');
 });
 
-fastify.get('/data', function (req, reply) {
-  return reply.code(200)
-    .header('Content-Type', 'application/json; charset=utf-8')
-    .send(getNodeTreeData());
+fastify.get('/data', function (_req, reply) {
+  const nodeTreeData = getNodeTreeData();
+  return reply.send(JSON.stringify(nodeTreeData));
 });
 
 fastify.listen({port: 3000}, function (err, address) {

@@ -1,22 +1,25 @@
-const { getIsFolder } = require('./browser.js');
+const { getIsFolder, getNode } = require('./browser.js');
 
-const unmockedFetch = global.fetch;
+describe('browser', () => {
+  describe('getIsFolder', () => {
+    test('node type is `folder`', () => {
+      const folderNode = getNode({
+        type: 'folder',
+        name: 'folder1',
+        modified: '2022-06-21T18:28:12.345Z',
+        size: 3,
+        children: [],
+      });
+      expect(getIsFolder(folderNode)).toBe(true);
+    })
 
-beforeAll(() => {
-  global.fetch = () =>
-    Promise.resolve({
-      json: () => Promise.resolve([]),
+    test('node type is `file`', () => {
+      const fileNode = getNode({
+        type: 'file',
+        name: 'file1',
+        modified: '2022-06-21T18:28:12.345Z',
+      });
+      expect(getIsFolder(fileNode)).toBe(false);
     });
-});
-
-afterAll(() => {
-  global.fetch = unmockedFetch;
-});
-
-test('getIsFolder', () => {
-  const folderNode = new NodeData('folder', 'folder!', new Date(), 2, []);
-  expect(getIsFolder(folderNode)).toBe(true);
-
-  const fileNode = new NodeData('file', 'file!', new Date());
-  expect(getIsFolder(folderNode)).toBe(false);
+  });
 });

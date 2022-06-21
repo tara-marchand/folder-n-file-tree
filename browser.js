@@ -1,13 +1,3 @@
-fetchNodeTreeData().then((nodeTreeData) => {
-  const nodeTree = getNodeTree(nodeTreeData);
-  const nav = document.querySelector('nav');
-  const pane = document.querySelector('section');
-
-  nav.addEventListener('click', handleNavClick);
-  pane.addEventListener('click', handlePaneClick);
-  nav.appendChild(nodeTree);
-});
-
 function handleNavClick(e) {
   e.preventDefault();
   const node = e.target.closest('li');
@@ -15,6 +5,7 @@ function handleNavClick(e) {
   setSelectedNode(node);
 
   if (getIsFolder(node)) {
+    const pane = document.querySelector('section');
     const currentPaneChildNodes = pane.querySelector('ul');
     const childNodes = node.querySelector('ul');
     let clonedChildNodes;
@@ -53,11 +44,10 @@ function getNode(nodeData) {
   const nameText = nodeData.name;
   let iconAndName;
 
-
   name.innerText = nameText;
-
   node.dataset.name = nameText;
   node.classList.add(nodeData.type);
+
   if (nodeData.type === 'folder') {
     icon.classList.add('gg-folder-add');
   } else {
@@ -86,13 +76,14 @@ function getNode(nodeData) {
 
 async function fetchNodeTreeData() {
   const response = await fetch('/data');
-  return response.text();
+  const data = await response.json();
+  return data;
 }
 
 function getNodeTree(nodeTreeData) {
   const nodeTree = document.createElement('ul');
 
-  JSON.parse(nodeTreeData).map((node) => {
+  nodeTreeData.map((node) => {
     nodeTree.appendChild(getNode(node));
   });
 
@@ -105,7 +96,7 @@ function getClonedChildNodesFromFolderTree(folderName) {
     `li[data-name="${folderName}"]`
   );
   const childNodes = folderTreeNode.querySelector('ul');
-  
+
   if (childNodes) {
     return childNodes.cloneNode(true);
   }
@@ -113,7 +104,7 @@ function getClonedChildNodesFromFolderTree(folderName) {
 }
 
 function getIsFolder(node) {
-  return node.classList.contains('folder');
+  return !!(node.classList && node.classList.contains('folder'));
 }
 
 function toggleIsHidden(node) {
@@ -145,5 +136,10 @@ function setSelectedNode(node) {
 }
 
 module.exports = {
-  getIsFolder
+  fetchNodeTreeData,
+  getIsFolder,
+  getNode,
+  getNodeTree,
+  handleNavClick,
+  handlePaneClick,
 }

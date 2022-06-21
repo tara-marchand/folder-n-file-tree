@@ -4,12 +4,14 @@
 
 body {
   font-family: sans-serif;
-  --color-border: #ccc;
-  --width-border: 10px;
+  margin: 0;
+  padding: 0 16px;
+  --color-border: #0cc;
+  --width-border: 8px;
 }
 
 main {
-  border: 10px solid var(--color-border);
+  border: var(--width-border) solid var(--color-border);
   display: grid;
   grid-template-columns: [start] 30% [column2] 70% [end];
 }
@@ -30,6 +32,7 @@ nav > ul, section > ul {
 }
 
 h2 {
+  color: #888;
   margin-left: 20px;
 }
 
