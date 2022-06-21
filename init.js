@@ -1,9 +1,9 @@
-const {
+import {
   fetchNodeTreeData,
   getNodeTree,
   handleNavClick,
   handlePaneClick,
-} = require('./browser');
+} from './browser.js';
 
 fetchNodeTreeData().then((nodeTreeData) => {
   const nodeTree = getNodeTree(nodeTreeData);

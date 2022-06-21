@@ -20,7 +20,4 @@ function NodeData(type, name, modified, size, children) {
   return this;
 };
 
-// ITreeNode
-module.exports = {
-  NodeData
-}
+export default NodeData;

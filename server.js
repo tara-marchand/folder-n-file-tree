@@ -1,12 +1,13 @@
-const Fastify = require('fastify');
-const fastifyStatic = require('@fastify/static');
-const { NodeData } = require('./NodeData');
+import Fastify from 'fastify';
+import fastifyStatic from '@fastify/static';
+
+import NodeData from './NodeData.js';
 
 const fastify = Fastify({
   logger: true,
 });
 
-fastify.register(fastifyStatic, { root: process.cwd()});
+fastify.register(fastifyStatic, {root: process.cwd()});
 
 fastify.get('/', function (req, reply) {
   return reply.sendFile('index.html');
@@ -24,7 +25,6 @@ fastify.listen({port: 3000}, function (err, address) {
   }
   console.log(`Server listening on ${address}`);
 });
-
 
 function getNodeTreeData() {
   const file111 = new NodeData('file', 'file111', new Date());

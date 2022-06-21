@@ -1,4 +1,4 @@
-const { getIsFolder, getNode } = require('./browser.js');
+import { getIsFolder, getNode } from './browser';
 
 describe('browser', () => {
   describe('getIsFolder', () => {

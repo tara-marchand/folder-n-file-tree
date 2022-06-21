@@ -135,11 +135,11 @@ function setSelectedNode(node) {
   node.classList.add('selected');
 }
 
-module.exports = {
+export {
   fetchNodeTreeData,
   getIsFolder,
   getNode,
   getNodeTree,
   handleNavClick,
   handlePaneClick,
-}
+};
