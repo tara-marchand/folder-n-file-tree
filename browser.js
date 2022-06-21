@@ -1,9 +1,7 @@
-const main = document.querySelector('main');
-const nav = main.querySelector('nav');
-const pane = main.querySelector('section');
-
 fetchNodeTreeData().then((nodeTreeData) => {
   const nodeTree = getNodeTree(nodeTreeData);
+  const nav = document.querySelector('nav');
+  const pane = document.querySelector('section');
 
   nav.addEventListener('click', handleNavClick);
   pane.addEventListener('click', handlePaneClick);
@@ -134,11 +132,18 @@ function toggleIsHidden(node) {
 }
 
 function setSelectedNode(node) {
-  main.querySelectorAll('li').forEach((_node) => {
-    _node.classList.remove('selected');
-    if (_node.dataset.name === node.dataset.name) {
-      _node.classList.add('selected');
-    }
-  });
+  document
+    .querySelector('main')
+    .querySelectorAll('li')
+    .forEach((_node) => {
+      _node.classList.remove('selected');
+      if (_node.dataset.name === node.dataset.name) {
+        _node.classList.add('selected');
+      }
+    });
   node.classList.add('selected');
+}
+
+module.exports = {
+  getIsFolder
 }

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "browser.js",
-  "type": "module",
+  "type": "commonjs",
   "dependencies": {
     "@fastify/static": "^6.4.0",
     "abstract-logging": "^2.0.1",
@@ -66,9 +66,17 @@
     "yallist": "^4.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx jest",
     "start": "node server.js"
   },
   "author": "Tara Marchand",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^28.1.1",
+    "jest-environment-jsdom": "^28.1.1"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {}
+  }
 }
