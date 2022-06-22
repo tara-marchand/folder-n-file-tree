@@ -4,6 +4,8 @@
 
 To run the project, enter `npm run start` in your terminal, in the project folder.
 
+To run the project's tests, enter `npm run test`.
+
 ## Viewing
 
 To view the project in your browser, go to `http://localhost:3000`.
