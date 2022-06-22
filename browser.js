@@ -25,7 +25,7 @@ function handleNavClick(e) {
 
 function handlePaneClick(e) {
   e.preventDefault();
-  const currentPaneChildNodes = pane.querySelectorAll('.children').item(0);
+  const currentPaneChildNodes = document.querySelector('section').querySelectorAll('.children').item(0);
   const node = e.target.closest('li');
   const childNodes = getClonedChildNodesFromFolderTree(node.dataset.name);
 

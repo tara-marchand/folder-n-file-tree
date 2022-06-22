@@ -32,7 +32,9 @@ section {
 }
 
 section > .columns {
-  margin: 20px 0 0 10px;
+  border-bottom: 1px solid #ddd;
+  margin: 20px 10px 0 10px;
+  padding-bottom: 10px;
 }
 
 nav > ul, section > ul {
@@ -48,11 +50,14 @@ ul {
   list-style: none;
 }
 
+section ul.children {
+  padding-left: 0;
+}
+
 .columns {
   color: #555;
   display: grid;
   grid-template-columns: [start-node] 50% [column2-node] 25% [column3-node] 15% [end-node];
-  width: 100%;
 }
 
 .column-name {
@@ -74,6 +79,10 @@ ul {
 
 .folder .column-size {
   display: none;
+}
+
+.file i {
+  margin-right: 18px;
 }
 
 li > div {
