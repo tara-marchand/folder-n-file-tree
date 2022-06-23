@@ -1,50 +1,120 @@
+const selectedNodeNameStr = 'selected-node-name';
+const selectedNodeDataAttribute = `data-${selectedNodeNameStr}`;
+
+function getMain() {
+  return document.querySelector('main');
+}
+
+function getNav() {
+  return document.querySelector('nav');
+}
+
+function getPane() {
+  return document.querySelector('section');
+}
+
+function getPaneContent() {
+  return getPane().querySelector('.content');
+}
+
+function getNodeFromClickEvent(e) {
+  return e.target.closest('li');
+}
+
 function handleNavClick(e) {
   e.preventDefault();
-  const node = e.target.closest('li');
+  const paneContent = getPaneContent();
+  const node = getNodeFromClickEvent(e);
+  const childNodes = node.querySelector('ul');
+  let clonedChildNodes;
 
-  setSelectedNode(node);
-
-  if (getIsFolder(node)) {
-    const pane = document.querySelector('section');
-    const currentPaneChildNodes = pane.querySelector('ul');
-    const childNodes = node.querySelector('ul');
-    let clonedChildNodes;
-
-    // Update folder tree nodes
-    toggleIsHidden(node);
-
-    // Update pane nodes
+  if (childNodes) {
     clonedChildNodes = childNodes.cloneNode(true);
-    if (currentPaneChildNodes) {
-      currentPaneChildNodes.replaceWith(clonedChildNodes);
+    clonedChildNodes.classList.remove('hidden');
+
+    if (childNodes.classList.contains('hidden')) {
+      showChildNodes(childNodes, node.querySelector('i'));
     } else {
-      pane.appendChild(clonedChildNodes);
+      hideChildNodes(childNodes, node.querySelector('i'));
+    }
+
+    paneContent.replaceChildren(clonedChildNodes);
+  } else {
+    if (getIsFolder(node)) {
+      paneContent.replaceChildren(getFolderDetails());
+    } else if (getIsFile(node)) {
+      paneContent.replaceChildren(getFileDetails());
     }
   }
+  setSelectedNode(node);
 }
 
 function handlePaneClick(e) {
   e.preventDefault();
-  const currentPaneChildNodes = document.querySelector('section').querySelectorAll('.children').item(0);
-  const node = e.target.closest('li');
-  const childNodes = getClonedChildNodesFromFolderTree(node.dataset.name);
+  const paneContent = getPaneContent();
+  const node = getNodeFromClickEvent(e);
+  const isNodeAlreadySelected = getSelectedNodeName() === node.dataset.name;
 
-  setSelectedNode(node);
+  if (getIsFolder(node)) {
+    if (!isNodeAlreadySelected) {
+      setSelectedNode(node);
+    }
 
-  if (childNodes && getIsFolder(node)) {
-    // Update pane nodes
-    currentPaneChildNodes.replaceWith(childNodes);
+    const clonedChildNodes = getClonedChildNodesFromFolderTree(
+      node.dataset.name
+    );
+    if (clonedChildNodes) {
+      clonedChildNodes.classList.remove('hidden');
+      paneContent.replaceChildren(clonedChildNodes);
+    } else {
+      paneContent.replaceChildren(getFolderDetails());
+    }
   }
+}
+
+function getFolderDetails(node) {
+  const folderDetails = document.createElement('div');
+
+  folderDetails.classList.add('folder-details');
+  folderDetails.innerText = 'Folder details!';
+  return folderDetails;
+}
+
+function getFileDetails(node) {
+  const fileDetails = document.createElement('div');
+
+  fileDetails.classList.add('file-details');
+  fileDetails.innerText = 'File details!';
+  return fileDetails;
 }
 
 function getNode(nodeData) {
   const node = document.createElement('li');
+  const {node: _node, columns} = getPaneColumns(nodeData, node);
+  node.append(columns);
 
-  const colContainer = document.createElement('div');
-  colContainer.classList.add('columns');
+  if (nodeData.children && nodeData.children.length > 0) {
+    const nodeChildren = document.createElement('ul');
+    nodeChildren.classList.add('children');
+    nodeChildren.classList.add('hidden');
+
+    nodeData.children.map((childNode) => {
+      const nodeChildEl = getNode(childNode);
+      nodeChildren.appendChild(nodeChildEl);
+    });
+
+    node.appendChild(nodeChildren);
+  }
+
+  return node;
+}
+
+function getPaneColumns(nodeData, node) {
+  const columns = document.createElement('div');
+  columns.classList.add('columns');
 
   // Icon and name column
-  const nameCol = document.createElement('div')
+  const nameCol = document.createElement('div');
   nameCol.classList.add('column-name');
   const icon = document.createElement('i');
   const name = document.createElement('span');
@@ -63,17 +133,21 @@ function getNode(nodeData) {
   nameCol.append(icon);
   nameCol.appendChild(name);
 
-  colContainer.appendChild(nameCol);
+  columns.appendChild(nameCol);
 
   // Date column
   const dateCol = document.createElement('div');
   dateCol.classList.add('column-date');
-  
+
   const date = new Date(nodeData.modified);
-  const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+  const [month, day, year] = [
+    date.getMonth(),
+    date.getDate(),
+    date.getFullYear(),
+  ];
   dateCol.innerHTML = `${month}/${day}/${year}`;
 
-  colContainer.appendChild(dateCol);
+  columns.appendChild(dateCol);
 
   // File size column
   const sizeCol = document.createElement('div');
@@ -82,23 +156,8 @@ function getNode(nodeData) {
     sizeCol.innerHTML = nodeData.size;
   }
 
-  colContainer.appendChild(sizeCol);
-  node.append(colContainer);
-
-  if (nodeData.children && nodeData.children.length > 0) {
-    const nodeChildren = document.createElement('ul');
-    nodeChildren.classList.add('children');
-    nodeChildren.classList.add('hidden');
-
-    nodeData.children.map((childNode) => {
-      const nodeChildEl = getNode(childNode);
-      nodeChildren.appendChild(nodeChildEl);
-    });
-
-    node.appendChild(nodeChildren);
-  }
-
-  return node;
+  columns.appendChild(sizeCol);
+  return {columns, node};
 }
 
 async function fetchNodeTreeData() {
@@ -118,11 +177,9 @@ function getNodeTree(nodeTreeData) {
 }
 
 function getClonedChildNodesFromFolderTree(folderName) {
-  const folderTree = document.querySelector('nav');
-  const folderTreeNode = folderTree.querySelector(
-    `li[data-name="${folderName}"]`
-  );
-  const childNodes = folderTreeNode.querySelector('ul');
+  const nav = getNav();
+  const navNode = nav.querySelector(`li[data-name="${folderName}"]`);
+  const childNodes = navNode.querySelector('ul');
 
   if (childNodes) {
     return childNodes.cloneNode(true);
@@ -134,40 +191,44 @@ function getIsFolder(node) {
   return !!(node.classList && node.classList.contains('folder'));
 }
 
-function toggleIsHidden(node) {
-  const icon = node.querySelector('i');
-  const childNodes = node.querySelector('ul');
+function getIsFile(node) {
+  return !!(node.classList && node.classList.contains('file'));
+}
 
-  if (!childNodes) {
-    return;
+function showChildNodes(childNodes, icon) {
+  if (icon) {
+    icon.classList.remove('gg-folder-add');
+    icon.classList.add('gg-folder-remove');
   }
+  childNodes.classList.remove('hidden');
+}
 
-  if (childNodes.classList.contains('hidden')) {
-    if (icon) {
-      icon.classList.remove('gg-folder-add');
-      icon.classList.add('gg-folder-remove');
-    }
-    childNodes.classList.remove('hidden');
-  } else {
-    if (icon) {
-      icon.classList.remove('gg-folder-remove');
-      icon.classList.add('gg-folder-add');
-    }
-    childNodes.classList.add('hidden');
+function hideChildNodes(childNodes, icon) {
+  if (icon) {
+    icon.classList.remove('gg-folder-remove');
+    icon.classList.add('gg-folder-add');
   }
+  childNodes.classList.add('hidden');
 }
 
 function setSelectedNode(node) {
-  document
-    .querySelector('main')
-    .querySelectorAll('li')
-    .forEach((_node) => {
+  const main = getMain();
+
+  // Store selected node name
+  main.setAttribute(selectedNodeDataAttribute, node.dataset.name);
+
+  // Set selected styles
+  main.querySelectorAll('li').forEach((_node) => {
+    if (_node.dataset.name !== node.dataset.name) {
       _node.classList.remove('selected');
-      if (_node.dataset.name === node.dataset.name) {
-        _node.classList.add('selected');
-      }
-    });
-  node.classList.add('selected');
+    } else {
+      _node.classList.add('selected');
+    }
+  });
+}
+
+function getSelectedNodeName() {
+  return getMain().dataset.selectedNodeName;
 }
 
 export {
@@ -177,5 +238,4 @@ export {
   getNodeTree,
   handleNavClick,
   handlePaneClick,
-  toggleIsHidden
 };
